@@ -35,4 +35,5 @@ export const ProformaScheme = z.object({
   observations: z.array(ObservationSchema),
   package: z.array(PackageSchema),
   personal_proyecto: z.array(EmployeeSchema),
+  igv: z.boolean(),
 });

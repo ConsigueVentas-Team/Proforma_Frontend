@@ -4,6 +4,15 @@ import { ProformaFormAreas } from "./ProformaFormAreas";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProformaFormPrice } from "./ProformaFormPrice";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Checkbox } from "../ui/checkbox";
 
 interface Props {
   packageName: string;
@@ -16,25 +25,58 @@ export function ProformaFormPackages({ form }: any) {
   return (
     <div className="border rounded-lg p-4 w-full">
       <p className="font-bold mb-4">Paquetes</p>
-      <div className="flex gap-4 p-4">
-        <ProformaFormPackage
-          form={form}
-          triggerName={["areas1", "price1"]}
-          packageName="Paquete 1"
-          index="0"
-        />
-        <ProformaFormPackage
-          form={form}
-          triggerName={["areas2", "price2"]}
-          packageName="Paquete 2"
-          index="1"
-        />
-        <ProformaFormPackage
-          form={form}
-          triggerName={["areas3", "price3"]}
-          packageName="Paquete 3"
-          index="2"
-        />
+      <div className="flex gap-8 justify-between p-4">
+        <div className="flex gap-4 w-full">
+          <ProformaFormPackage
+            form={form}
+            triggerName={["areas1", "price1"]}
+            packageName="Paquete 1"
+            index="0"
+          />
+          <ProformaFormPackage
+            form={form}
+            triggerName={["areas2", "price2"]}
+            packageName="Paquete 2"
+            index="1"
+          />
+          <ProformaFormPackage
+            form={form}
+            triggerName={["areas3", "price3"]}
+            packageName="Paquete 3"
+            index="2"
+          />
+        </div>
+        <div className="w-full flex gap-8">
+          <div className="flex w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="total">Total: </Label>
+            <Input
+              id="total"
+              placeholder="Total"
+              disabled
+              value={
+                form.getValues("package.0.price") +
+                form.getValues("package.1.price") +
+                form.getValues("package.2.price")
+              }
+            />
+          </div>
+          <FormField
+            control={form.control}
+            name="igv"
+            render={({ field }) => (
+              <FormItem className="flex w-full max-w-sm items-center gap-1.5  space-y-0">
+                <FormLabel htmlFor="igv">IGV: </FormLabel>
+                <FormControl>
+                  <Checkbox
+                    id="igv"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
     </div>
   );

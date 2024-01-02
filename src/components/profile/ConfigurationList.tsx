@@ -38,7 +38,7 @@ export const ConfigurationList = () => {
         <div className=''>
             {
                 statusButton === "CL" && (
-                    <Command>
+                    <Command className='bg-background'>
                         <p className="font-bold mb-5 text-xl flex justify-center sm:flex-none sm:justify-start">Privacidad y seguridad</p>
                         <CommandList>
                             <CommandGroup className='border p-0 rounded-md max-w-md'>

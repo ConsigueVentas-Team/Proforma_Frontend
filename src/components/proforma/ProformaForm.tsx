@@ -34,6 +34,7 @@ export function ProformaForm({ onSubmit }: Props) {
       type: "Intermedia",
       observations: [],
       package: packages,
+      igv: false, // 18%
       personal_proyecto: [],
     },
   });

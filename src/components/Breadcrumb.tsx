@@ -5,14 +5,10 @@ interface RouteNames {
 }
 
 const routeNames: RouteNames = {
-  file: "Archivos",
-  reports: "Informes",
-  invoice: "Facturas",
-  expense: "Gastos",
   proforma: "Proformas",
   "proforma/create": "Crear Proforma",
   users: "Usuarios",
-  dashboard: "Tablero",
+  profile: "Perfil",
 };
 
 export function Breadcrumb() {
