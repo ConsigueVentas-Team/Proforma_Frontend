@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Toaster } from "@/components/ui/toaster";
 import { UserDropdownMenu } from "@/components/UserDropdownMenu";
-import { LogoIcon } from "@/components/icons";
+import { LogoIcon } from "@/components/icons/icons";
 import UserNotification from "@/components/UserNotification";
 
 import { Breadcrumb } from "@/components/Breadcrumb";

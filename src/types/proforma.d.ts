@@ -94,6 +94,7 @@ interface ProformaPDF {
   packages: ProformaPDFPackage[];
   personal_proyecto: ProformaPDFPersonal[];
   areas: ProformaPDFArea[];
+  igv: boolean;
 }
 interface ProformaPDFCompany {
   company_id: number;

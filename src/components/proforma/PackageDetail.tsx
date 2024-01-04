@@ -3,7 +3,7 @@ import {
   GoogleMapsIcon,
   InstagramIcon,
   TikTokIcon,
-} from "@/components/icons";
+} from "@/components/icons/icons";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,

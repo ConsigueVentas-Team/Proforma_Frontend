@@ -1,23 +1,56 @@
-import { StyleSheet, Document, View, Text, Page } from "@react-pdf/renderer";
+import {
+  StyleSheet,
+  Document,
+  View,
+  Text,
+  Page,
+  Image,
+} from "@react-pdf/renderer";
 import React from "react";
+import ProformaHeader from "@/assets/proforma/proforma-header.png";
+import ProformaFooter from "@/assets/proforma/proforma-footer.png";
+import Ellipse1 from "@/assets/proforma/ellipse-1.png";
+import Ellipse2 from "@/assets/proforma/ellipse-2.png";
 
 interface Props {
   data: ProformaPDF;
 }
 
 export const PDF = React.memo(({ data }: Props) => {
-
-  const counts = data?.personal_proyecto.reduce((acc: Record<string, number>, curr: { position: { name: string | number; }; }) => {
-    acc[curr.position.name] = (acc[curr.position.name] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const counts = data?.personal_proyecto.reduce(
+    (
+      acc: Record<string, number>,
+      curr: { position: { name: string | number } }
+    ) => {
+      acc[curr.position.name] = (acc[curr.position.name] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   return (
     <Document>
       <Page size="A4" style={styles.Page}>
+        <Image src={ProformaHeader} style={stylesImages.ImageHeader} />
+        <Image
+          src={Ellipse1}
+          style={[stylesImages.Ellipse, stylesImages.Ellipse1]}
+        />
+        <Image
+          src={Ellipse2}
+          style={[stylesImages.Ellipse, stylesImages.Ellipse2]}
+        />
+        <Image
+          src={Ellipse1}
+          style={[stylesImages.Ellipse, stylesImages.Ellipse3]}
+        />
+
+        <View style={styles.ViewTextNumber}>
+          <Text>PROFORMA {data?.invoice_number}</Text>
+        </View>
         <View style={{ padding: "15px" }}>
-          <View style={styles.ViewHeade}>
-            <View style={styles.ViewHeadeI}>
+          <View style={styles.ViewHeader}>
+            <View style={[styles.ViewHeaderInfo, styles.ViewHeadEnterprise]}>
               <Text style={styles.textCell}>
                 RAZÓN SOCIAL: GRUPO ONLINE CONSIGUE VENTAS E.I.R.L
               </Text>
@@ -36,19 +69,7 @@ export const PDF = React.memo(({ data }: Props) => {
                 PORTAFOLIO DIGITAL: https://www.behance.net/jhoelfernandez
               </Text>
             </View>
-            <View style={styles.ViewHeadeI}>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  width: "100%",
-                  justifyContent: "center",
-                  fontSize: "10px",
-                  backgroundColor: "yellow",
-                }}
-              >
-                <Text>PROFORMA {data?.invoice_number}</Text>
-              </View>
+            <View style={styles.ViewHeaderInfo}>
               <Text style={styles.textCell}>FECHA: {data?.date}</Text>
               <Text style={styles.textCell}>REFERENCIA: {data?.reference}</Text>
               <Text style={styles.textCell}>
@@ -69,7 +90,8 @@ export const PDF = React.memo(({ data }: Props) => {
               flexDirection: "row",
               justifyContent: "flex-start",
               fontSize: "8",
-              border: "1px solid #000",
+              border: "1.5px solid #000",
+              borderRadius: 10,
               marginBottom: "15px",
               padding: "8px",
             }}
@@ -96,7 +118,7 @@ export const PDF = React.memo(({ data }: Props) => {
               </Text>
             </View>
           </View>
-          <View style={{ border: "1px" }}>
+          <View style={{ border: "1.5px solid #283C4C", borderRadius: 10 }}>
             <Text style={styles.textTitleBorderBotton}>PRESENTACIÓN</Text>
             <View
               style={{
@@ -212,8 +234,8 @@ export const PDF = React.memo(({ data }: Props) => {
             ))}
             <View
               style={{
-                borderBottom: "1px",
-                borderRight: "1px",
+                paddingTop: "5px",
+                paddingBottom: "5px",
               }}
             >
               <Text
@@ -282,24 +304,41 @@ export const PDF = React.memo(({ data }: Props) => {
                   PAQUETE 3
                 </Text>
               </View>
-              <View style={stylesTable.ColTablePrecing}>
-                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${data?.packages[0] ? data.packages[0].price : "000.00"
-                  }`}</Text>
-                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${data?.packages[1] ? data?.packages[1].price : "000.00"
-                  }`}</Text>
-                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${data?.packages[2] ? data.packages[2].price : "000.00"
-                  }`}</Text>
+              <View style={[stylesTable.ColTablePrecing, { borderRight: 0 }]}>
+                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${
+                  data?.packages[0]
+                    ? data?.igv
+                      ? (Number(data.packages[0].price) * 1.18).toFixed(2)
+                      : data.packages[0].price
+                    : "000.00"
+                }`}</Text>
+                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${
+                  data?.packages[1]
+                    ? data?.igv
+                      ? (Number(data.packages[1].price) * 1.18).toFixed(2)
+                      : data.packages[1].price
+                    : "000.00"
+                }`}</Text>
+                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${
+                  data?.packages[2]
+                    ? data?.igv
+                      ? (Number(data.packages[2].price) * 1.18).toFixed(2)
+                      : data.packages[2].price
+                    : "000.00"
+                }`}</Text>
               </View>
             </View>
             <View style={stylesTable.tableRow}>
               <View style={stylesTable.tableCol}>
                 <Text style={stylesTable.tableCell}>
-                  NOTA: El monto mencionado no incluye IGV.
+                  {!data?.igv
+                    ? "NOTA: El monto mencionado no incluye IGV."
+                    : "NOTA: El monto mencionado incluye IGV."}
                 </Text>
                 <Text style={stylesTable.tableCell}>
-                  * Si desea factura o boleta solicitar al área contable para la
-                  entrega adicionando el IGV y si no lo desea se emitirá un RXH
-                  por el servicio solicitado
+                  {!data?.igv
+                    ? "* Si desea factura o boleta solicitar al área contable para la entrega adicionando el IGV y si no lo desea se emitirá un RXH por el servicio solicitado"
+                    : ""}
                 </Text>
                 <Text style={stylesTable.tableCell}>
                   * El monto cotizado está basado de manera mensual
@@ -325,7 +364,7 @@ export const PDF = React.memo(({ data }: Props) => {
               </View>
             </View>
             <View style={stylesTable.tableRow}>
-              <View style={stylesTable.tableCol}>
+              <View style={[stylesTable.tableCol, { borderBottom: "none" }]}>
                 <Text style={stylesTable.tableCellPrecing}>
                   Inversión en publicidad en Facebook e Ig minimo 7 dias a costo
                   de 30 a 50 por dia
@@ -339,13 +378,33 @@ export const PDF = React.memo(({ data }: Props) => {
                   por dia minimo 7 dias
                 </Text>
               </View>
-              <View style={stylesTable.ColTablePrecing}>
-                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${data?.packages[0] ? data.packages[0].price : "000.00"
-                  }`}</Text>
-                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${data?.packages[1] ? data?.packages[1].price : "000.00"
-                  }`}</Text>
-                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${data?.packages[2] ? data.packages[2].price : "000.00"
-                  }`}</Text>
+              <View
+                style={[
+                  stylesTable.ColTablePrecing,
+                  { borderBottom: "none", borderRight: "none" },
+                ]}
+              >
+                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${
+                  data?.packages[0]
+                    ? data?.igv
+                      ? (Number(data.packages[0].price) * 1.18).toFixed(2)
+                      : data.packages[0].price
+                    : "000.00"
+                }`}</Text>
+                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${
+                  data?.packages[1]
+                    ? data?.igv
+                      ? (Number(data.packages[1].price) * 1.18).toFixed(2)
+                      : data.packages[1].price
+                    : "000.00"
+                }`}</Text>
+                <Text style={stylesTable.tableCellPrecingRight}>{`s/ ${
+                  data?.packages[2]
+                    ? data?.igv
+                      ? (Number(data.packages[2].price) * 1.18).toFixed(2)
+                      : data.packages[2].price
+                    : "000.00"
+                }`}</Text>
               </View>
             </View>
           </View>
@@ -360,7 +419,12 @@ export const PDF = React.memo(({ data }: Props) => {
             {data?.personal_proyecto.map(
               (item: ProformaPDFPersonal, index: number) => (
                 <View key={index} style={stylesTable.tableRow}>
-                  <View style={stylesTable.tableCol}>
+                  <View
+                    style={[
+                      stylesTable.tableCol,
+                      { borderBottom: 0, margin: 4 },
+                    ]}
+                  >
                     <Text style={stylesTable.tableCell}>
                       {`${counts[item.position.name]} ${item.position.name}`}
                     </Text>
@@ -378,7 +442,9 @@ export const PDF = React.memo(({ data }: Props) => {
               </View>
             </View>
             <View style={stylesTable.tableRow}>
-              <View style={stylesTable.tableCol}>
+              <View
+                style={[stylesTable.tableCol, { borderBottom: 0, margin: 4 }]}
+              >
                 <Text style={stylesTable.tableCell}>{data?.work_time}</Text>
               </View>
             </View>
@@ -392,7 +458,12 @@ export const PDF = React.memo(({ data }: Props) => {
             {data?.observations.map(
               (item: ProformaPDFObservation, index: number) => (
                 <View key={index} style={stylesTable.tableRow}>
-                  <View style={stylesTable.tableCol}>
+                  <View
+                    style={[
+                      stylesTable.tableCol,
+                      { borderBottom: 0, margin: 4 },
+                    ]}
+                  >
                     <Text style={stylesTable.tableCell}>
                       {item.description}
                     </Text>
@@ -410,7 +481,9 @@ export const PDF = React.memo(({ data }: Props) => {
               </View>
             </View>
             <View style={stylesTable.tableRow}>
-              <View style={stylesTable.tableCol}>
+              <View
+                style={[stylesTable.tableCol, { borderBottom: 0, margin: 4 }]}
+              >
                 <Text style={stylesTable.tableCell}>
                   **FORMA DE PAGO: PARA COMENZAR EL PROYECTO SE PAGARÁ EL 50% DE
                   INICIAR Y 50% A LOS 20 DÍAS DE LAS PRIMERA REUNIÓN VIRTUAL CON
@@ -423,32 +496,26 @@ export const PDF = React.memo(({ data }: Props) => {
             <View style={styles.ViewItemDisplayFlex}>
               <Text style={styles.TextCenter}>DEPÓSITO BCP SOLES</Text>
               <View style={styles.TextDetailItem}>
-                <View>
-                  <Text style={styles.textCell}>A NOMBRE:</Text>
-                  <Text style={styles.textCell}>Cuenta:</Text>
-                  <Text style={styles.textCell}>Cuenta Interbancaria CCI:</Text>
-                </View>
-                <View style={{ marginLeft: "5px" }}>
-                  <Text style={styles.textCell}>JHOEL FERNANDEZ ALVARADO</Text>
-                  <Text style={styles.textCell}>193-37963785-0-55</Text>
-                  <Text style={styles.textCell}>00219313796378505510</Text>
-                </View>
+                <Text style={styles.textCell}>
+                  A NOMBRE: JHOEL FERNANDEZ ALVARADO
+                </Text>
+                <Text style={styles.textCell}>Cuenta: 193-37963785-0-55</Text>
+                <Text style={styles.textCell}>
+                  Cuenta Interbancaria CCI: 00219313796378505510
+                </Text>
               </View>
 
               <Text style={styles.TextCenter}>
                 CUENTA EMPRESARIAL EN SOLES INTERBANK
               </Text>
               <View style={styles.TextDetailItem}>
-                <View>
-                  <Text style={styles.textCell}>A NOMBRE:</Text>
-                  <Text style={styles.textCell}>Cuenta:</Text>
-                  <Text style={styles.textCell}>Cuenta Interbancaria CCI:</Text>
-                </View>
-                <View style={{ marginLeft: "5px" }}>
-                  <Text style={styles.textCell}>JHOEL FERNANDEZ ALVARADO</Text>
-                  <Text style={styles.textCell}>8983339398889</Text>
-                  <Text style={styles.textCell}>00389801333939888943</Text>
-                </View>
+                <Text style={styles.textCell}>
+                  A NOMBRE: JHOEL FERNANDEZ ALVARADO
+                </Text>
+                <Text style={styles.textCell}>Cuenta: 8983339398889</Text>
+                <Text style={styles.textCell}>
+                  Cuenta Interbancaria CCI: 00389801333939888943
+                </Text>
               </View>
             </View>
             <View style={styles.ViewItemDisplayFlex}>
@@ -456,28 +523,22 @@ export const PDF = React.memo(({ data }: Props) => {
                 DEPÓSITO O TRANSFERENCIA BBVA EN SOLES
               </Text>
               <View style={styles.TextDetailItem}>
-                <View>
-                  <Text style={styles.textCell}>A NOMBRE:</Text>
-                  <Text style={styles.textCell}>Cuenta:</Text>
-                  <Text style={styles.textCell}>Cuenta Interbancaria CCI:</Text>
-                </View>
-                <View style={{ marginLeft: "5px" }}>
-                  <Text style={styles.textCell}>JHOEL FERNANDEZ ALVARADO</Text>
-                  <Text style={styles.textCell}>0011-0814-0210802148-12</Text>
-                  <Text style={styles.textCell}>0011-814-000210802148-12</Text>
-                </View>
+                <Text style={styles.textCell}>
+                  A NOMBRE: JHOEL FERNANDEZ ALVARADO
+                </Text>
+                <Text style={styles.textCell}>
+                  Cuenta: 0011-0814-0210802148-12
+                </Text>
+                <Text style={styles.textCell}>
+                  Cuenta Interbancaria CCI: 0011-814-000210802148-12
+                </Text>
               </View>
               <Text style={styles.TextCenter}>NÚMERO PARA PAGO CON YAPE</Text>
               <View style={styles.TextDetailItem}>
-                <View>
-                  <Text style={styles.textCell}>A NOMBRE:</Text>
-                  <Text style={styles.textCell}>Número:</Text>
-                </View>
-                <View style={{ marginLeft: "52px" }}>
-                  <Text style={styles.textCell}>JHOEL FERNANDEZ ALVARADO</Text>
-                  <Text style={styles.textCell}>949914249</Text>
-                </View>
-
+                <Text style={styles.textCell}>
+                  A NOMBRE: JHOEL FERNANDEZ ALVARADO
+                </Text>
+                <Text style={styles.textCell}>Número: 949914249</Text>
               </View>
               <Text style={styles.textCell}>
                 *Importante se debe mandar los comprobantes de pago al asesor
@@ -486,9 +547,57 @@ export const PDF = React.memo(({ data }: Props) => {
             </View>
           </View>
         </View>
+        <Image
+          src={Ellipse2}
+          style={[stylesImages.Ellipse, stylesImages.Ellipse8]}
+        />
+        <Image src={ProformaFooter} style={stylesImages.ImageFooter} />
       </Page>
     </Document>
   );
+});
+
+const stylesImages = StyleSheet.create({
+  ImageHeader: {
+    position: "absolute",
+    top: "0px",
+    left: "0px",
+    width: "50%",
+    height: "auto",
+    marginTop: 0,
+    marginLeft: 0,
+  },
+  ImageFooter: {
+    position: "absolute",
+    bottom: "0px",
+    left: "0px",
+    right: "0px",
+    height: "auto",
+  },
+  Ellipse: {
+    position: "absolute",
+    width: "70px",
+  },
+  Ellipse1: {
+    top: "130px",
+    left: "-35px",
+    width: "70px",
+  },
+  Ellipse2: {
+    top: "30%",
+    right: "-30px",
+    width: "70px",
+  },
+  Ellipse3: {
+    top: "50%",
+    left: "-35px",
+    width: "70px",
+  },
+  Ellipse8: {
+    bottom: "130px",
+    right: "-20px",
+    width: "70px",
+  },
 });
 
 const styles = StyleSheet.create({
@@ -496,18 +605,42 @@ const styles = StyleSheet.create({
   Page: {
     padding: "20px",
   },
-  ViewHeade: {
+  ViewHeader: {
     width: "100%",
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "row",
     fontSize: 8,
     marginBottom: "15px",
+    marginTop: "100px",
   },
-  ViewHeadeI: {
-    border: "1px solid #000",
+  ViewHeaderInfo: {
+    border: "1.5px solid #283C4C",
+    borderRadius: 10,
     padding: 5,
     width: "48%",
+  },
+  ViewHeadEnterprise: {
+    width: "70%",
+    border: "none",
+  },
+  ViewTextNumber: {
+    position: "absolute",
+    top: "100px",
+    right: "0px",
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    width: "45%",
+    height: "30px",
+    justifyContent: "flex-start",
+    fontSize: "14px",
+    fontWeight: "extrabold",
+    paddingLeft: "15px",
+    backgroundColor: "#283C4C",
+    color: "#DAFC4A",
+    borderTopLeftRadius: "10px",
+    borderBottomLeftRadius: "10px",
   },
   textCell: {
     marginTop: 2,
@@ -515,41 +648,50 @@ const styles = StyleSheet.create({
     marginLeft: 2,
     marginRight: 2,
     fontSize: 8,
+    fontWeight: "light",
   },
   textTitleBorderBotton: {
-    backgroundColor: "rgb(255,165,0, 0.5)",
-    borderBottom: "1px",
-    paddingTop: 2,
-    paddingBottom: 2,
-    paddingLeft: 2,
+    backgroundColor: "#DADADA",
+    borderBottom: "1.5px solid #283C4C",
+    borderTopLeftRadius: "8px",
+    borderTopRightRadius: "8px",
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingLeft: 10,
     paddingRight: 2,
     fontSize: 9,
   },
   textSubTitleBackground: {
-    backgroundColor: "rgb( 135, 206, 250, 0.5)",
+    backgroundColor: "#e8fd8e",
     width: "100%",
   },
   textTitleBackground: {
-    backgroundColor: "rgb(255,165,0, 0.5)",
-    paddingTop: 2,
-    paddingBottom: 2,
-    paddingLeft: 2,
+    backgroundColor: "#DADADA",
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingLeft: 10,
     paddingRight: 2,
+    borderTopLeftRadius: "8px",
+    borderTopRightRadius: "8px",
     fontSize: 9,
   },
   ViewFooter: {
-    width: "100%",
+    width: "80%",
     display: "flex",
     justifyContent: "space-between",
+    gap: "10px",
     flexDirection: "row",
     fontSize: 8,
-    borderBottom: "1px solid #000",
-    borderTop: "1px solid #000",
-    marginTop: "10px",
-    padding: "2px",
+    border: "1.5px solid #283C4C",
+    borderRadius: 10,
+    marginTop: "15px",
+    marginBottom: "15px",
+    marginLeft: "auto",
+    marginRight: "auto",
+    padding: "5px 10px",
   },
   ViewItemDisplayFlex: {
-    width: "50%",
+    width: "45%",
   },
   ViewTextFooter: {
     width: "100%",
@@ -566,10 +708,8 @@ const styles = StyleSheet.create({
   },
   TextDetailItem: {
     width: "100%",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
     fontSize: 8,
+    fontWeight: "light",
   },
 });
 
@@ -577,12 +717,10 @@ const stylesTable = StyleSheet.create({
   table: {
     display: "flex",
     width: "auto",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderRightWidth: 0,
-    borderBottomWidth: 0,
+    border: "1.5px solid #283C4C",
     marginTop: "10px",
     marginBotton: "5px",
+    borderRadius: "10px",
   },
   tableCancelarMarginTop: {
     display: "flex",
@@ -604,6 +742,7 @@ const stylesTable = StyleSheet.create({
     borderWidth: 1,
     borderLeftWidth: 0,
     borderTopWidth: 0,
+    borderRight: "none",
   },
   tableCell: {
     marginTop: 2,
@@ -614,7 +753,7 @@ const stylesTable = StyleSheet.create({
   },
   tableText: {
     width: "100%",
-    border: "1px solid #000",
+    border: "1.5px solid #000",
     borderTop: 0,
     borderRight: 0,
     borderLeft: 0,
@@ -702,8 +841,9 @@ const stylesTableCharacteristics = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderLeftWidth: 0,
+    borderRight: "none",
     borderTopWidth: 0,
-    backgroundColor: "rgb( 135, 206, 250, 1)",
+    backgroundColor: "#e8fd8e",
   },
   tableCell: {
     margin: "auto",

@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { LoginForm } from "./forms/login-form";
-import { LogoIconExpanded } from "@/components/icons";
+import { LogoIconExpanded } from "@/components/icons/icons";
 
 export function LoginCard() {
   return (
