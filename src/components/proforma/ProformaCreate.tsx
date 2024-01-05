@@ -8,8 +8,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/useToast";
 import api from "@/services/api";
 import { useMutation } from "react-query";
+import { useTitle } from "@/hooks/useTitle";
 
 function ProformaCreate() {
+  useTitle("Crear");
   const navigate = useNavigate();
   const [isPending, setIsPending] = useState(false);
   const [values, setValues] = useState({});

@@ -7,11 +7,11 @@ import { useQuery } from "react-query";
 import api from "@/services/api";
 
 export function Proforma() {
-  useTitle("Proforma");
+  useTitle("Inicio");
 
   const { data, isLoading, isError, error } = useQuery(
     "proformas",
-    async () => await api.get("/proformas").then((res) => res.data)
+    async () => await api.get("/proformas").then((res) => res.data),
   );
 
   return (

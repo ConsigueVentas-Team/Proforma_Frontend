@@ -45,9 +45,7 @@ export const MainColumns: ColumnDef<RowData>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div>{row.getValue("invoice_number")}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("invoice_number")}</div>,
   },
   {
     accessorKey: "date",
@@ -92,9 +90,7 @@ export const MainColumns: ColumnDef<RowData>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("prepared_by")}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("prepared_by")}</div>,
   },
   {
     accessorKey: "approved_by",
@@ -109,9 +105,7 @@ export const MainColumns: ColumnDef<RowData>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("approved_by")}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("approved_by")}</div>,
   },
   {
     accessorKey: "email",
