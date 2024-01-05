@@ -92,7 +92,7 @@ export function ProformaFormPersonnel({ form }: any) {
         pages: [10],
         pageParams: [1],
       },
-    }
+    },
   );
 
   useEffect(() => {
@@ -102,10 +102,10 @@ export function ProformaFormPersonnel({ form }: any) {
           ? page.map((obj: FromPersonnel) => ({
               ...obj,
               isSelect: personel.some(
-                (element) => element.employees_id === obj.employee_id
+                (element) => element.employees_id === obj.employee_id,
               ),
             }))
-          : []
+          : [],
       );
       setElementosDisponibles(personal);
     }
@@ -137,7 +137,7 @@ export function ProformaFormPersonnel({ form }: any) {
         const nuevosElementos = prev.map((obj) =>
           obj.employee_id === personnel.employee_id
             ? { ...obj, isSelect: !obj.isSelect }
-            : obj
+            : obj,
         );
         const listaSeleccionados = nuevosElementos
           .filter((obj) => obj.isSelect)
@@ -146,7 +146,7 @@ export function ProformaFormPersonnel({ form }: any) {
         return nuevosElementos;
       });
     },
-    [form, personel]
+    [form, personel],
   );
 
   useEffect(() => {
@@ -167,15 +167,15 @@ export function ProformaFormPersonnel({ form }: any) {
           ...obj,
           isSelect: false,
         }))
-      : []
+      : [],
   );
 
   return (
     <div className="border rounded-lg p-4">
       <p className="font-bold mb-4">Personal del Proyecto</p>
-      <Button onClick={() => console.log(elementosDisponibles)}>
-        elementosDisponibles
-      </Button>
+      {/* <Button onClick={() => console.log(elementosDisponibles)}> */}
+      {/*   elementosDisponibles */}
+      {/* </Button> */}
       <div className="flex gap-20 p-4">
         <div className="flex flex-col gap-8">
           <div className="flex items-center space-x-4">
@@ -235,8 +235,8 @@ export function ProformaFormPersonnel({ form }: any) {
                               {isFetchingNextPage
                                 ? "Cargando..."
                                 : hasNextPage
-                                ? "Cargar más"
-                                : "No hay más elementos"}
+                                  ? "Cargar más"
+                                  : "No hay más elementos"}
                             </button>
                           </ScrollArea>
                         </CommandGroup>
@@ -301,7 +301,7 @@ function CommandItemPersonnel({
       <Check
         className={cn(
           "mr-2 h-4 w-4",
-          personnel.isSelect ? "opacity-100" : "opacity-0"
+          personnel.isSelect ? "opacity-100" : "opacity-0",
         )}
       />
     </CommandItem>
