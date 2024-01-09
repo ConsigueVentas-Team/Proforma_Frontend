@@ -168,9 +168,9 @@ export function ProformaFormPersonnel({ form }: any) {
   return (
     <div className="border rounded-lg p-4">
       <p className="font-bold mb-4">Personal del Proyecto</p>
-      <Button onClick={() => console.log(elementosDisponibles)}>
+      {/* <Button onClick={() => console.log(elementosDisponibles)}>
         elementosDisponibles
-      </Button>
+      </Button> */}
       <div className="flex gap-20 p-4">
         <div className="flex flex-col gap-8">
           <div className="flex items-center space-x-4">
