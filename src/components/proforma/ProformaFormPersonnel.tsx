@@ -17,7 +17,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -27,10 +26,10 @@ import { cn, getInitials } from "@/lib/utils";
 import { useInfiniteQuery, useQuery } from "react-query";
 import api from "@/services/api";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/useToast";
 import { useIntersection } from "@mantine/hooks";
 import { Skeleton } from "../ui/skeleton";
+import debounce from "lodash.debounce";
 
 interface FromPersonnel extends PersonnelDetail {
   isSelect: boolean;
@@ -55,10 +54,9 @@ export function ProformaFormPersonnel({ form }: any) {
   const [elementosDisponibles, setElementosDisponibles] = useState<
     FromPersonnel[]
   >([]);
-  const [isFetchingEmployees, setIsFetchingEmployees] = useState(false);
+  const [keyword, setKeyword] = useState("");
 
   const getEmployees = async (page: number) => {
-    setIsFetchingEmployees(true);
     try {
       const res = await api.get(`/employees?page=${page}`);
       return res.data.results;
@@ -68,22 +66,39 @@ export function ProformaFormPersonnel({ form }: any) {
         description: "No se pudo cargar los empleados",
         variant: "destructive",
       });
-    } finally {
-      setIsFetchingEmployees(false);
+    }
+  };
+
+  const getEmployeesByKeyword = async () => {
+    try {
+      const res = await api.get(`/employees?search=${keyword}`);
+      console.log(res.data);
+      return res.data;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo cargar los empleados",
+        variant: "destructive",
+      });
     }
   };
 
   const {
     data: personnelList,
     fetchNextPage,
-    hasNextPage,
+    refetch,
+    isFetching,
     isFetchingNextPage,
-    status,
   } = useInfiniteQuery(
-    ["query"],
+    ["personnel", keyword],
     async ({ pageParam = 1 }) => {
-      const response = await getEmployees(pageParam);
-      return response;
+      if (keyword.length > 0) {
+        const response = await getEmployeesByKeyword();
+        return response;
+      } else {
+        const response = await getEmployees(pageParam);
+        return response;
+      }
     },
     {
       getNextPageParam: (_, pages) => {
@@ -95,6 +110,14 @@ export function ProformaFormPersonnel({ form }: any) {
       },
     }
   );
+
+  const request = debounce(async () => {
+    refetch();
+  }, 200);
+
+  const debounceRequest = useCallback(() => {
+    request();
+  }, []);
 
   useEffect(() => {
     if (personnelList && personnelList.pages) {
@@ -149,6 +172,7 @@ export function ProformaFormPersonnel({ form }: any) {
     },
     [form, personnel]
   );
+
   useEffect(() => {
     form.setValue("personal_proyecto", personnel);
   }, [personnel]);
@@ -160,7 +184,9 @@ export function ProformaFormPersonnel({ form }: any) {
   });
 
   useEffect(() => {
-    if (entry?.isIntersecting) fetchNextPage();
+    if (!keyword) {
+      if (entry?.isIntersecting) fetchNextPage();
+    }
   }, [entry]);
 
   const _personnel = elementosDisponibles;
@@ -195,7 +221,15 @@ export function ProformaFormPersonnel({ form }: any) {
                     </PopoverTrigger>
                     <PopoverContent className="p-0" side="right" align="start">
                       <Command>
-                        <CommandInput placeholder="Buscar Colaborador..." />
+                        <CommandInput
+                          placeholder="Buscar Colaborador..."
+                          isLoading={isFetching}
+                          value={keyword}
+                          onValueChange={(text) => {
+                            setKeyword(text);
+                            debounceRequest();
+                          }}
+                        />
 
                         <CommandGroup className="h-40">
                           <ScrollArea className="w-full h-40">
@@ -212,7 +246,8 @@ export function ProformaFormPersonnel({ form }: any) {
                                       ref={ref}
                                       className="flex flex-col gap-2"
                                     >
-                                      <p className="p-4">Cargando mas...</p>
+                                      {!keyword && <div className="p-1"/>}
+
                                       {isFetchingNextPage &&
                                         arraySkeleton.map((_, index) => (
                                           <Skeleton

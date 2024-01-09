@@ -259,7 +259,12 @@ export const PDF = React.memo(({ data }: Props) => {
             </View>
             {data?.areas.map((area: ProformaPDFArea, index: number) => (
               <View key={index} style={stylesTable.tableRow}>
-                <View style={stylesTable.tableCol}>
+                <View
+                  style={[
+                    stylesTable.tableCol,
+                    index === data?.areas.length - 1 ? { borderBottom: 0 } : {},
+                  ]}
+                >
                   <View style={styles.textSubTitleBackground}>
                     <Text style={stylesTable.tableText}>
                       {area.area_id}. {area.name}
@@ -635,7 +640,7 @@ const styles = StyleSheet.create({
     height: "30px",
     justifyContent: "flex-start",
     fontSize: "14px",
-    fontWeight: "extrabold",
+    fontWeight: "semibold",
     paddingLeft: "15px",
     backgroundColor: "#283C4C",
     color: "#DAFC4A",
@@ -816,14 +821,14 @@ const stylesTableCharacteristics = StyleSheet.create({
     borderTopWidth: 0,
   },
   tableCol2: {
-    width: "3%", // 100% / 6 columns
+    width: "5%", // 100% / 6 columns
     borderStyle: "solid",
     borderWidth: 1,
     borderLeftWidth: 0,
     borderTopWidth: 0,
   },
   tableCol3: {
-    width: "30%", // 100% / 6 columns
+    width: "28%", // 100% / 6 columns
     borderStyle: "solid",
     borderWidth: 1,
     borderLeftWidth: 0,
@@ -846,9 +851,11 @@ const stylesTableCharacteristics = StyleSheet.create({
     backgroundColor: "#e8fd8e",
   },
   tableCell: {
-    margin: "auto",
+    textAlign: "center",
     marginTop: 5,
     fontSize: 6,
+    paddingLeft: 2,
+    paddingRight: 2,
   },
   tableCellTitle: {
     margin: "auto",
