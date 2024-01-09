@@ -30,6 +30,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/useToast";
 import { useIntersection } from "@mantine/hooks";
+import { Skeleton } from "../ui/skeleton";
 
 interface FromPersonnel extends PersonnelDetail {
   isSelect: boolean;
@@ -50,7 +51,7 @@ interface countByPosition {
 }
 
 export function ProformaFormPersonnel({ form }: any) {
-  const [personel, setPersonnel] = useState<Personnel[]>([]);
+  const [personnel, setPersonnel] = useState<Personnel[]>([]);
   const [elementosDisponibles, setElementosDisponibles] = useState<
     FromPersonnel[]
   >([]);
@@ -92,7 +93,7 @@ export function ProformaFormPersonnel({ form }: any) {
         pages: [10],
         pageParams: [1],
       },
-    },
+    }
   );
 
   useEffect(() => {
@@ -101,11 +102,11 @@ export function ProformaFormPersonnel({ form }: any) {
         Array.isArray(page)
           ? page.map((obj: FromPersonnel) => ({
               ...obj,
-              isSelect: personel.some(
-                (element) => element.employees_id === obj.employee_id,
+              isSelect: personnel.some(
+                (element) => element.employees_id === obj.employee_id
               ),
             }))
-          : [],
+          : []
       );
       setElementosDisponibles(personal);
     }
@@ -132,12 +133,12 @@ export function ProformaFormPersonnel({ form }: any) {
 
   const onSelect = useCallback(
     (personnel: FromPersonnel) => {
-      form.setValue("personal_proyecto", personel);
+      form.setValue("personal_proyecto", personnel);
       setElementosDisponibles((prev) => {
         const nuevosElementos = prev.map((obj) =>
           obj.employee_id === personnel.employee_id
             ? { ...obj, isSelect: !obj.isSelect }
-            : obj,
+            : obj
         );
         const listaSeleccionados = nuevosElementos
           .filter((obj) => obj.isSelect)
@@ -146,36 +147,30 @@ export function ProformaFormPersonnel({ form }: any) {
         return nuevosElementos;
       });
     },
-    [form, personel],
+    [form, personnel]
   );
-
   useEffect(() => {
-    form.setValue("personal_proyecto", personel);
-  }, [personel]);
+    form.setValue("personal_proyecto", personnel);
+  }, [personnel]);
 
   const lastEmployeeRef = useRef<HTMLDivElement>(null);
   const { ref, entry } = useIntersection({
     root: lastEmployeeRef.current,
-    threshold: 1,
+    threshold: 0.1,
   });
 
-  if (entry?.isIntersecting) fetchNextPage();
+  useEffect(() => {
+    if (entry?.isIntersecting) fetchNextPage();
+  }, [entry]);
 
-  const _employees = personnelList?.pages.flatMap((page: any) =>
-    Array.isArray(page)
-      ? page.map((obj: PersonnelDetail) => ({
-          ...obj,
-          isSelect: false,
-        }))
-      : [],
-  );
-
+  const _personnel = elementosDisponibles;
+  const arraySkeleton = Array.from({ length: 10 });
   return (
     <div className="border rounded-lg p-4">
       <p className="font-bold mb-4">Personal del Proyecto</p>
-      {/* <Button onClick={() => console.log(elementosDisponibles)}> */}
-      {/*   elementosDisponibles */}
-      {/* </Button> */}
+      <Button onClick={() => console.log(elementosDisponibles)}>
+        elementosDisponibles
+      </Button>
       <div className="flex gap-20 p-4">
         <div className="flex flex-col gap-8">
           <div className="flex items-center space-x-4">
@@ -204,40 +199,38 @@ export function ProformaFormPersonnel({ form }: any) {
 
                         <CommandGroup className="h-40">
                           <ScrollArea className="w-full h-40">
-                            {elementosDisponibles ? (
-                              elementosDisponibles.length === 0 ? (
-                                <CommandEmpty>
-                                  No hay elementos disponibles
-                                </CommandEmpty>
-                              ) : (
-                                elementosDisponibles.map((personnel) => (
+                            {_personnel.length === 0 ? (
+                              <CommandEmpty>
+                                <p>No hay colaboradores</p>
+                              </CommandEmpty>
+                            ) : (
+                              _personnel?.map((personnel: FromPersonnel, i) => {
+                                if (i === _personnel.length - 1)
+                                  return (
+                                    <div
+                                      key={personnel.employee_id}
+                                      ref={ref}
+                                      className="flex flex-col gap-2"
+                                    >
+                                      <p className="p-4">Cargando mas...</p>
+                                      {isFetchingNextPage &&
+                                        arraySkeleton.map((_, index) => (
+                                          <Skeleton
+                                            key={index}
+                                            className="w-full h-12"
+                                          />
+                                        ))}
+                                    </div>
+                                  );
+                                return (
                                   <CommandItemPersonnel
                                     key={personnel.employee_id}
                                     personnel={personnel}
                                     onSelect={onSelect}
                                   />
-                                ))
-                              )
-                            ) : (
-                              <CommandEmpty>
-                                No hay elementos disponibles
-                              </CommandEmpty>
+                                );
+                              })
                             )}
-                            {status === "loading" && (
-                              <div className="flex justify-center">
-                                <Progress />
-                              </div>
-                            )}
-                            <button
-                              onClick={() => fetchNextPage()}
-                              disabled={isFetchingNextPage}
-                            >
-                              {isFetchingNextPage
-                                ? "Cargando..."
-                                : hasNextPage
-                                  ? "Cargar más"
-                                  : "No hay más elementos"}
-                            </button>
                           </ScrollArea>
                         </CommandGroup>
                       </Command>
@@ -301,7 +294,7 @@ function CommandItemPersonnel({
       <Check
         className={cn(
           "mr-2 h-4 w-4",
-          personnel.isSelect ? "opacity-100" : "opacity-0",
+          personnel.isSelect ? "opacity-100" : "opacity-0"
         )}
       />
     </CommandItem>
