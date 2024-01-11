@@ -58,8 +58,8 @@ export function ProformaFormPersonnel({ form }: any) {
 
   const getEmployees = async (page: number) => {
     try {
-      const res = await api.get(`/employees?page=${page}`);
-      return res.data.results;
+      const { data } = await api.get(`/employees?page=${page}`);
+      return data.results;
     } catch (error) {
       toast({
         title: "Error",
@@ -71,9 +71,8 @@ export function ProformaFormPersonnel({ form }: any) {
 
   const getEmployeesByKeyword = async () => {
     try {
-      const res = await api.get(`/employees?search=${keyword}`);
-      console.log(res.data);
-      return res.data;
+      const { data } = await api.get(`/employees?search=${keyword}`);
+      return data;
     } catch (error) {
       toast({
         title: "Error",
@@ -92,13 +91,10 @@ export function ProformaFormPersonnel({ form }: any) {
   } = useInfiniteQuery(
     ["personnel", keyword],
     async ({ pageParam = 1 }) => {
-      if (keyword.length > 0) {
-        const response = await getEmployeesByKeyword();
-        return response;
-      } else {
-        const response = await getEmployees(pageParam);
-        return response;
+      if (!keyword) {
+        return await getEmployees(pageParam);
       }
+      return await getEmployeesByKeyword();
     },
     {
       getNextPageParam: (_, pages) => {
@@ -108,16 +104,21 @@ export function ProformaFormPersonnel({ form }: any) {
         pages: [10],
         pageParams: [1],
       },
+      enabled: false,
     }
   );
 
   const request = debounce(async () => {
     refetch();
-  }, 200);
+  }, 300);
 
   const debounceRequest = useCallback(() => {
     request();
   }, []);
+
+  useEffect(() => {
+    debounceRequest();
+  }, [keyword]);
 
   useEffect(() => {
     if (personnelList && personnelList.pages) {
@@ -238,33 +239,47 @@ export function ProformaFormPersonnel({ form }: any) {
                                 <p>No hay colaboradores</p>
                               </CommandEmpty>
                             ) : (
-                              _personnel?.map((personnel: FromPersonnel, i) => {
-                                if (i === _personnel.length - 1)
-                                  return (
-                                    <div
+                              <>
+                                {_personnel
+                                  .slice(0, -1)
+                                  .map((personnel: FromPersonnel) => (
+                                    <CommandItemPersonnel
                                       key={personnel.employee_id}
-                                      ref={ref}
-                                      className="flex flex-col gap-2"
-                                    >
-                                      {!keyword && <div className="p-1"/>}
+                                      personnel={personnel}
+                                      onSelect={onSelect}
+                                    />
+                                  ))}
+                                {_personnel.length > 0 && (
+                                  <div
+                                    key={
+                                      _personnel[_personnel.length - 1]
+                                        .employee_id
+                                    }
+                                    ref={ref}
+                                    className="flex flex-col gap-2"
+                                  >
+                                    {!keyword && <div className="p-1" />}
 
-                                      {isFetchingNextPage &&
-                                        arraySkeleton.map((_, index) => (
-                                          <Skeleton
-                                            key={index}
-                                            className="w-full h-12"
-                                          />
-                                        ))}
-                                    </div>
-                                  );
-                                return (
-                                  <CommandItemPersonnel
-                                    key={personnel.employee_id}
-                                    personnel={personnel}
-                                    onSelect={onSelect}
-                                  />
-                                );
-                              })
+                                    {isFetchingNextPage &&
+                                      arraySkeleton.map((_, index) => (
+                                        <Skeleton
+                                          key={index}
+                                          className="w-full h-12"
+                                        />
+                                      ))}
+                                    <CommandItemPersonnel
+                                      key={
+                                        _personnel[_personnel.length - 1]
+                                          .employee_id
+                                      }
+                                      personnel={
+                                        _personnel[_personnel.length - 1]
+                                      }
+                                      onSelect={onSelect}
+                                    />
+                                  </div>
+                                )}
+                              </>
                             )}
                           </ScrollArea>
                         </CommandGroup>

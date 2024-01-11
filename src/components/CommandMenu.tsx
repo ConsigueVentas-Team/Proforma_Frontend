@@ -51,7 +51,7 @@ export function CommandMenu({ ...props }: DialogProps) {
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Escriba un comando o busque..." />
+        <CommandInput isLoading={false} placeholder="Escriba un comando o busque..." />
         <CommandList>
           <CommandEmpty>No hay resultados.</CommandEmpty>
           <CommandGroup heading="Modulos">

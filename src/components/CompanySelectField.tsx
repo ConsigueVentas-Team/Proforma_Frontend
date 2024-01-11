@@ -6,7 +6,12 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
-import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
@@ -24,14 +29,18 @@ interface Props {
 const CompanySelectField = ({ form }: Props) => {
   const [open, setOpen] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchCompanies = async () => {
+      setIsLoading(true);
       try {
-        const response = await api.get('/companies');
+        const response = await api.get("/companies");
         setCompanies(response.data);
       } catch (error) {
-        console.error('Error al obtener las compañías:', error);
+        console.error("Error al obtener las compañías:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -63,7 +72,10 @@ const CompanySelectField = ({ form }: Props) => {
             </PopoverTrigger>
             <PopoverContent className="w-full p-0">
               <Command>
-                <CommandInput placeholder="Buscar empresa" />
+                <CommandInput
+                  isLoading={isLoading}
+                  placeholder="Buscar empresa"
+                />
                 <CommandEmpty>Empresa no encontrada</CommandEmpty>
                 <CommandGroup>
                   {companies.map((company) => (
